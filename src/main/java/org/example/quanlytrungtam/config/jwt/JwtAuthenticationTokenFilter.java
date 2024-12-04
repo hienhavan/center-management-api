@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -38,13 +39,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String jwt = getJwtFromRequest(request);
         if (jwt != null && jwtService.validateJwtToken(jwt)) {
             String username = jwtService.getUsernameFromJwtToken(jwt);
-            UserDetails userDetails = userService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
-            authentication.setDetails(userDetails);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (username != null) {
+                UserDetails userDetails = userService.loadUserByUsername(username);
+                Integer id = ((User) userDetails).getId();
+                String jwtInRedis = (String) redisTemplate.opsForValue().get("user:" + id + ":tokens");
+                if (jwt.equals(jwtInRedis)) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authentication.setDetails(userDetails);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    System.out.println(jwtInRedis);
+                }
+            }
         }
+        // Tiến hành filter chain
         filterChain.doFilter(request, response);
     }
 
@@ -56,3 +65,4 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         return null;
     }
 }
+
