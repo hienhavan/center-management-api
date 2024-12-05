@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -45,14 +47,27 @@ public class UserController {
     @GetMapping("api/v1/me")
     public ResponseEntity<?> informationUser(Principal principal) {
         try {
-            String user = principal.getName();
+            String email = principal.getName();
+            User user = userService.findByEmail(email);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại");
             }
-//            return ResponseEntity.ok(userService.informationUser(user));
-            return ResponseEntity.ok("ok");
+            return ResponseEntity.ok(userService.informationUser(user));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ");
+        }
+    }
+
+    @PutMapping("/api/v1/me")
+    public ResponseEntity<String> updateUser(@ModelAttribute FormUpdateRequest profilePicture, Principal principal) {
+        int id = userService.findByEmail(principal.getName()).getId();
+        try {
+            userService.update(id, profilePicture);
+            return ResponseEntity.ok("User updated successfully");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while updating user");
         }
     }
 

@@ -65,6 +65,12 @@ public class UserService {
                 .roles(request.getRoles())
                 .build();
         userRepository.save(user);
+        String email = request.getEmail();
+        String username = request.getFullName();
+        String password = request.getPassword();
+        String subject = "Your account has been created";
+        String text = String.format("Hello %s,\n\nYour account has been created successfully.\nAccount: %s\nPassword: %s\n\nBest regards", username, email, password);
+        emailService.sendEmail(email, subject, text);
     }
 
     public void update(int id, FormUpdateRequest request) throws UserNotFoundException {
@@ -193,8 +199,8 @@ public class UserService {
         }
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("not found" + email));
     }
 
     private String encodePassword(String password) {

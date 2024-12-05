@@ -14,6 +14,5 @@ public class FormUpdateRequest {
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private String address;
-    private Boolean active;
     private MultipartFile img;
 }
