@@ -18,14 +18,4 @@ public class EmailService {
         message.setText(text);
         emailSender.send(message);
     }
-
-
-    public void sendFeeReminderEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        emailSender.send(message);
-    }
-
 }

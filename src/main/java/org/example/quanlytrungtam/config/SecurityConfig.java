@@ -54,7 +54,7 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/login", "/api/v1/register", "/v1/auth/**", "/image/**").permitAll()
+                        .requestMatchers("/api/v1/login", "/api/v1/register", "/v1/auth/**", "/image/**","/api/v1/user/find-email","/api/v1/user/reset-password").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                 )
                 .build();

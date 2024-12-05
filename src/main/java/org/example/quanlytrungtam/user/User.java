@@ -52,7 +52,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private Gender gender;
+        private Gender gender;
 
     @Column(name = "identity")
     private String identity;
