@@ -69,7 +69,7 @@ public class StudentService {
                 .orElseThrow(() -> new NoSuchElementException("No student found with user id: " + id));
     }
 
-//    public List<StudentIdDTO> listStudent(Long classId) {
-//        return studentRepository.listStudent(classId);
-//    }
+public void updateStatus (String status) {
+
+}
 }
