@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ShowGradeResponse {
+public class UpdateGradeRequest {
     private Integer gradeId;
-
     private Double theoryGrade;
-
     private Double practicalGrade;
 
-    private Double averageGrade;
+    public Double getAverageGrade() {
+        return (theoryGrade + practicalGrade) / 2;
+    }
 }

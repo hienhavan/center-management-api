@@ -4,12 +4,10 @@ import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.grade.GradeService;
 import org.example.quanlytrungtam.grade.ShowGradeResponse;
 import org.example.quanlytrungtam.grade.ShowStudentGradeResponse;
+import org.example.quanlytrungtam.grade.UpdateGradeRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +48,11 @@ public class AcademicAffairsController {
         Optional<ShowStudentGradeResponse> data = gradesService.getGrade(idGrade);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
+
+    @PutMapping("/api/v1/academic-affairs/update-grade")
+    public ResponseEntity<?> updateGrade(@RequestBody UpdateGradeRequest request) {
+        gradesService.updateGrade(request);
+        return ResponseEntity.ok("thành công");
+    }
+
 }

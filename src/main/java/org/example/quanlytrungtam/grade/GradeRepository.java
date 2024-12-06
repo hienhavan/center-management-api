@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface GradeRepository extends JpaRepository<Grades, Integer> {
     @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradeResponse(c.className, s.userID.fullName, sub.subjectName, " +
-            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.theoryGrade, g.practicalGrade, " +
+            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId,g.theoryGrade, g.practicalGrade, " +
             "(g.theoryGrade + g.practicalGrade) / 2)) " +
             "FROM Grades g " +
             "JOIN g.student s " +
@@ -19,7 +19,7 @@ public interface GradeRepository extends JpaRepository<Grades, Integer> {
     List<ShowStudentGradeResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId);
 
     @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradeResponse(c.className, s.userID.fullName, sub.subjectName, " +
-            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.theoryGrade, g.practicalGrade, " +
+            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId,g.theoryGrade, g.practicalGrade, " +
             "(g.theoryGrade + g.practicalGrade) / 2)) " +
             "FROM Grades g " +
             "JOIN g.student s " +
