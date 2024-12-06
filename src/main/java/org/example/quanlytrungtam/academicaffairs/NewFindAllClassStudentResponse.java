@@ -1,6 +1,6 @@
 package org.example.quanlytrungtam.academicaffairs;
 
-public interface NewFinAllClassStudentResponse {
+public interface NewFindAllClassStudentResponse {
     Integer getIdStudent();
 
     String getFullName();

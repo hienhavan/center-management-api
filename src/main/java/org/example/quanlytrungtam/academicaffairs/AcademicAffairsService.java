@@ -11,7 +11,7 @@ public class AcademicAffairsService {
     @Autowired
     private StudentRepository studentRepository;
 
-    public List<NewFinAllClassStudentResponse> listStudent(Integer classId) {
+    public List<NewFindAllClassStudentResponse> listStudent(Integer classId) {
         return studentRepository.listClassStudent(classId);
     }
 }
