@@ -69,7 +69,12 @@ public class StudentService {
                 .orElseThrow(() -> new NoSuchElementException("No student found with user id: " + id));
     }
 
-public void updateStatus (String status) {
+    public void changeStatus(ChangeStatusRequest request) {
+        Student student = studentRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new NoSuchElementException("No student found with id: " + request.getStudentId()));
+        student.setStatus(Status.valueOf(request.getStatus()));
+        studentRepository.save(student);
 
-}
+
+    }
 }

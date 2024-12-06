@@ -5,6 +5,8 @@ import org.example.quanlytrungtam.grade.AddGradeRequest;
 import org.example.quanlytrungtam.grade.GradeService;
 import org.example.quanlytrungtam.grade.ShowStudentGradeResponse;
 import org.example.quanlytrungtam.grade.UpdateGradeRequest;
+import org.example.quanlytrungtam.student.ChangeStatusRequest;
+import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.subject.Subject;
 import org.example.quanlytrungtam.subject.SubjectService;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,14 @@ public class AcademicAffairsController {
     private final AcademicAffairsService academicAffairsService;
     private final GradeService gradesService;
     private final SubjectService subjectService;
+    private final StudentService studentService;
 
-    public AcademicAffairsController(ClassService classService, AcademicAffairsService academicAffairsService, GradeService gradesService, SubjectService subjectService) {
+    public AcademicAffairsController(ClassService classService, AcademicAffairsService academicAffairsService, GradeService gradesService, SubjectService subjectService, StudentService studentService) {
         this.classService = classService;
         this.academicAffairsService = academicAffairsService;
         this.gradesService = gradesService;
         this.subjectService = subjectService;
+        this.studentService = studentService;
     }
 
     @GetMapping("/api/v1/academic-affairs/list-class")
@@ -77,9 +81,9 @@ public class AcademicAffairsController {
         return ResponseEntity.ok("thêm thành công");
     }
 
-    @GetMapping("/api/v1/academic-affairs/changeStatus/{status}")
-    public ResponseEntity<?> changeStatus(@PathVariable("status") String status) {
-        academicAffairsService.changeStatus(status);
+    @GetMapping("/api/v1/academic-affairs/changeStatus")
+    public ResponseEntity<?> changeStatus(@RequestBody ChangeStatusRequest request) {
+        studentService.changeStatus(request);
         return ResponseEntity.ok("thành công");
     }
 }
