@@ -26,18 +26,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/api/v1/register")
-    public ResponseEntity<?> register(@RequestBody AddUserRequest request) {
-        try {
-            userService.save(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Đăng ký thành công");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
-        }
-    }
-
     @GetMapping("api/v1/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         userService.findById(id);
@@ -58,16 +46,32 @@ public class UserController {
         }
     }
 
+
     @PutMapping("/api/v1/me")
     public ResponseEntity<String> updateUser(@ModelAttribute FormUpdateRequest profilePicture, Principal principal) {
-        int id = userService.findByEmail(principal.getName()).getId();
         try {
+            int id = userService.findByEmail(principal.getName()).getId();
             userService.update(id, profilePicture);
-            return ResponseEntity.ok("User updated successfully");
+            return ResponseEntity.ok("cập nhật thành công");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while updating user");
+            return ResponseEntity.status(500).body("lỗi cập nhât user");
+        }
+    }
+
+    @PutMapping("/api/v1/me/password")
+    public ResponseEntity<String> updatePassword(
+            Principal principal,
+            @RequestBody UpdatePasswordRequest request) {
+        try {
+            int id = userService.findByEmail(principal.getName()).getId();
+            if (userService.updatePassword(id, request.getNewPassword(), request.getCurrentPassword()) != null) {
+                return ResponseEntity.ok("cập nhật thành công");
+            }
+            return ResponseEntity.badRequest().body("Mật khẩu không chính xác");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mật khẩu không hợp lệ");
         }
     }
 
@@ -75,11 +79,11 @@ public class UserController {
     public ResponseEntity<String> findPassword(@RequestBody EmailRequest email) {
         try {
             userService.findPassword(email.getEmail(), httpSession);
-            return ResponseEntity.ok("Password recovery email has been sent.");
+            return ResponseEntity.ok("Email khôi phục mật khẩu đã được gửi.");
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(404).body("User not found with the provided email.");
+            return ResponseEntity.status(404).body("Không tìm thấy người dùng");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while processing your request.");
+            return ResponseEntity.status(500).body("lỗi");
         }
     }
 
@@ -87,13 +91,13 @@ public class UserController {
     public ResponseEntity<String> resetPassword(@RequestBody RestPasswordRequest request) {
         String email = (String) httpSession.getAttribute("resetEmail");
         if (email == null) {
-            return ResponseEntity.status(400).body("No email found in session.");
+            return ResponseEntity.status(400).body("Không tìm thấy email");
         }
         try {
             userService.changePassword(email, request.getCode(), request.getNewPassword(), httpSession);
             httpSession.removeAttribute("resetEmail");
             httpSession.removeAttribute("code");
-            return ResponseEntity.ok("Password has been successfully reset.");
+            return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404)
                     .body("Invalid recovery code: " + request.getCode());

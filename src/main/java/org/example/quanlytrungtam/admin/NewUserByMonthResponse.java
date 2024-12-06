@@ -1,4 +1,4 @@
-package org.example.quanlytrungtam.user;
+package org.example.quanlytrungtam.admin;
 
 public interface NewUserByMonthResponse {
     Integer getMonth();

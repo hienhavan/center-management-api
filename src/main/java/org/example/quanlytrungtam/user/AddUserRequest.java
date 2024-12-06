@@ -17,5 +17,4 @@ public class AddUserRequest {
     private LocalDate dateOfBirth;
     private Boolean active;
     private Set<Role> roles;
-
 }

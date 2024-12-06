@@ -2,8 +2,10 @@ package org.example.quanlytrungtam.user;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.quanlytrungtam.admin.NewUserByMonthResponse;
 import org.example.quanlytrungtam.email.EmailService;
 import org.example.quanlytrungtam.exception.UserNotFoundException;
+import org.example.quanlytrungtam.admin.NewFindAllTeacherResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -201,6 +203,10 @@ public class UserService {
 
     public User findByEmail(String email) throws UserNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("not found" + email));
+    }
+
+    public List<NewFindAllTeacherResponse> findAllTeacher() throws UserNotFoundException {
+        return userRepository.findByRoles(Role.ROLE_TEACHER);
     }
 
     private String encodePassword(String password) {
