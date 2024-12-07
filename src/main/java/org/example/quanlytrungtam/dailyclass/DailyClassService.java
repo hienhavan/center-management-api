@@ -9,6 +9,8 @@ import org.example.quanlytrungtam.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class DailyClassService {
     @Autowired
@@ -21,6 +23,9 @@ public class DailyClassService {
         this.classService = classService;
     }
 
+    LocalDateTime currentDateTime = LocalDateTime.now();
+
+
     public void save(AddDailyClassRequest request) {
         Classes classes = classService.findById(request.getIdClass());
         User user = userService.findById(request.getTeacherId());
@@ -28,6 +33,7 @@ public class DailyClassService {
                 .classes(classes)
                 .lecturer(user)
                 .context(request.getContext())
+                .creationDate(currentDateTime)
                 .build();
         dailyClassRepository.save(dailyClass);
     }

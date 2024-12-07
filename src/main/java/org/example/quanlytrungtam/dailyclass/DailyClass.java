@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.dailyclass;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.example.quanlytrungtam.classes.Classes;
 import org.example.quanlytrungtam.user.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -31,7 +33,8 @@ public class DailyClass {
     private User lecturer;
 
     @Column(name = "creationdate", nullable = false)
-    private LocalDate creationDate = LocalDate.now();
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime creationDate;
 
     private String context;
 }

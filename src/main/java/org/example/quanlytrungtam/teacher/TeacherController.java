@@ -4,6 +4,12 @@ import org.example.quanlytrungtam.academicaffairs.AcademicAffairsService;
 import org.example.quanlytrungtam.academicaffairs.NewFindAllClassStudentResponse;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.classes.NewListClassTeachResponse;
+import org.example.quanlytrungtam.dailyclass.AddDailyClassRequest;
+import org.example.quanlytrungtam.dailyclass.DailyClass;
+import org.example.quanlytrungtam.dailyclass.DailyClassService;
+import org.example.quanlytrungtam.dailystudent.AddDailyStudentRequest;
+import org.example.quanlytrungtam.dailystudent.DailyStudent;
+import org.example.quanlytrungtam.dailystudent.DailyStudentService;
 import org.example.quanlytrungtam.student.NewFindStudentResponse;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.user.User;
@@ -22,12 +28,16 @@ public class TeacherController {
     private final ClassService classService;
     private final AcademicAffairsService academicAffairsService;
     private final StudentService studentService;
+    private final DailyStudentService dailyStudentService;
+    private final DailyClassService dailyClassService;
 
-    public TeacherController(UserService userService, ClassService classService, AcademicAffairsService academicAffairsService, StudentService studentService) {
+    public TeacherController(UserService userService, ClassService classService, AcademicAffairsService academicAffairsService, StudentService studentService, DailyStudentService dailyStudentService, DailyClassService dailyClassService) {
         this.userService = userService;
         this.classService = classService;
         this.academicAffairsService = academicAffairsService;
         this.studentService = studentService;
+        this.dailyStudentService = dailyStudentService;
+        this.dailyClassService = dailyClassService;
     }
 
     @GetMapping("/api/v1/teacher/all-classes")
@@ -60,7 +70,28 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-//    @GetMapping("/api/v1/teacher/write-daily-class)"
+    @PostMapping("/api/v1/teacher/add-daily-class")
+    public ResponseEntity<?> addDailyClass(@RequestBody AddDailyClassRequest request) {
+        try {
+            dailyClassService.save(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
+        }
+    }
 
+    @PostMapping("/api/v1/teacher/add-daily-student")
+    public ResponseEntity<?> addDailyStudent(@RequestBody AddDailyStudentRequest request) {
+        try {
+            dailyStudentService.save(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L��i hệ thống: " + e.getMessage());
+        }
+    }
 }
 

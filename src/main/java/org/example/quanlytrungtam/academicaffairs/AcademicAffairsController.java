@@ -77,8 +77,14 @@ public class AcademicAffairsController {
 
     @PostMapping("/api/v1/academic-affairs/add-grade")
     public ResponseEntity<?> addGrade(@RequestBody AddGradeRequest request) {
-        gradesService.saveGrade(request);
-        return ResponseEntity.ok("thêm thành công");
+        try {
+            gradesService.saveGrade(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
+        }
     }
 
     @GetMapping("/api/v1/academic-affairs/changeStatus")

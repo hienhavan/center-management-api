@@ -1,14 +1,14 @@
 package org.example.quanlytrungtam.dailystudent;
 
-import org.example.quanlytrungtam.classes.Classes;
-import org.example.quanlytrungtam.dailyclass.AddDailyClassRequest;
-import org.example.quanlytrungtam.dailyclass.DailyClass;
 import org.example.quanlytrungtam.student.Student;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
 
 @Service
 public class DailyStudentService {
@@ -22,6 +22,8 @@ public class DailyStudentService {
         this.studentService = studentService;
     }
 
+    LocalDateTime currentDateTime = LocalDateTime.now();
+
     public void save(AddDailyStudentRequest request) {
         Student student = studentService.findById(request.getStudentId());
         User user = userService.findById(request.getTeacherId());
@@ -29,6 +31,7 @@ public class DailyStudentService {
                 .student(student)
                 .lecturer(user)
                 .context(request.getContext())
+                .creationDate(currentDateTime)
                 .build();
         dailyStudentRepository.save(dailyStudent);
     }
