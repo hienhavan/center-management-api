@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public User findById(int id) throws UserNotFoundException {
+    public User findById(Integer id) throws UserNotFoundException {
 
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }

@@ -59,5 +59,8 @@ public class TeacherController {
         NewFindStudentResponse data = studentService.showProfileStudent(idStudent);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
+
+//    @GetMapping("/api/v1/teacher/write-daily-class)"
+
 }
 

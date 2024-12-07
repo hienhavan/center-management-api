@@ -27,11 +27,6 @@ public class StudentService {
         this.classService = classService;
     }
 
-    public void flush() {
-
-    }
-
-
     public <S extends Student> long count(Example<S> example) {
         return 0;
     }
@@ -52,8 +47,8 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public Student findById(Integer id) {
-        return studentRepository.findById(id).orElse(null);
+    public Student findById(Integer idStudent) {
+        return studentRepository.findById(idStudent).orElse(null);
     }
 
     public long count() {
