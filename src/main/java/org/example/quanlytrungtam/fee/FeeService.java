@@ -5,6 +5,8 @@ import org.example.quanlytrungtam.student.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FeeService {
     @Autowired
@@ -24,5 +26,12 @@ public class FeeService {
                 .status(FeeStatus.UNPAID)
                 .build();
         feeRepository.save(req);
+    }
+
+    public List<NewFindFeeResponse> getFeesByStudent(Integer studentId) {
+        return feeRepository.findListFee(studentId);
+    }
+    public List<NewFindFeeResponse> getFeesByStudentHistory(Integer studentId) {
+        return feeRepository.findListFeeHistory(studentId);
     }
 }
