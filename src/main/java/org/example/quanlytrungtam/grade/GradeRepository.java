@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.grade;
 
+import org.example.quanlytrungtam.admin.NewAverageGradesByClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,5 +29,10 @@ public interface GradeRepository extends JpaRepository<Grades, Integer> {
             "JOIN s.classID c " +
             "WHERE g.gradeId = :gradeId")
     Optional<ShowStudentGradeResponse> findStudentGradeDetailsByGradeId(@Param("gradeId") Integer idGrade);
+
+    @Query("SELECT g.student.classID.className AS className, AVG(g.averageGrade) AS averageGrades " +
+            "FROM Grades g " +
+            "GROUP BY g.student.classID.className")
+    List<NewAverageGradesByClass> listAverageGradesByClass();
 
 }

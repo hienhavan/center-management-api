@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.grade;
 
+import org.example.quanlytrungtam.admin.NewAverageGradesByClass;
 import org.example.quanlytrungtam.student.Student;
 import org.example.quanlytrungtam.student.StudentRepository;
 import org.example.quanlytrungtam.subject.Subject;
@@ -54,6 +55,10 @@ public class GradeService {
                 .averageGrade((request.getPracticalGrade() + request.getTheoryGrade()) / 2)
                 .build();
         gradeRepository.save(grade);
+    }
+
+    public List<NewAverageGradesByClass> listAvgGradesByClass() {
+        return gradeRepository.listAverageGradesByClass();
     }
 }
 

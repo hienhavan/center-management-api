@@ -4,6 +4,7 @@ import org.example.quanlytrungtam.classes.AddClassRequest;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.fee.AddFeeRequest;
 import org.example.quanlytrungtam.fee.FeeService;
+import org.example.quanlytrungtam.grade.GradeService;
 import org.example.quanlytrungtam.student.AddStudentRequest;
 import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionResponse;
 import org.example.quanlytrungtam.student.StudentService;
@@ -25,13 +26,15 @@ public class AdminController {
     private final ClassService classService;
     private final FeeService feeService;
     private final StudentService studentService;
+    private final GradeService gradeService;
 
-    public AdminController(SubjectService subjectService, UserService userService, ClassService classService, FeeService feeService, StudentService studentService) {
+    public AdminController(SubjectService subjectService, UserService userService, ClassService classService, FeeService feeService, StudentService studentService, GradeService gradeService) {
         this.subjectService = subjectService;
         this.userService = userService;
         this.classService = classService;
         this.feeService = feeService;
         this.studentService = studentService;
+        this.gradeService = gradeService;
     }
 
     @PostMapping("/api/v1/admin/register")
@@ -117,5 +120,11 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Loi hệ thống: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/api/v1/admin/list-avg-class")
+    public ResponseEntity<?> getAvgClass() {
+        List<NewAverageGradesByClass> data = gradeService.listAvgGradesByClass();
+        return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 }

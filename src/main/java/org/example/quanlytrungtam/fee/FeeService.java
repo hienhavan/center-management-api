@@ -31,7 +31,18 @@ public class FeeService {
     public List<NewFindFeeResponse> getFeesByStudent(Integer studentId) {
         return feeRepository.findListFee(studentId);
     }
+
     public List<NewFindFeeResponse> getFeesByStudentHistory(Integer studentId) {
         return feeRepository.findListFeeHistory(studentId);
+    }
+
+    public Fee findById(Integer idFee) {
+        return feeRepository.findById(idFee).orElse(null);
+    }
+
+    public void update(Integer idFee) {
+        Fee fee = findById(idFee);
+        fee.setStatus(FeeStatus.ACTIVE);
+        feeRepository.save(fee);
     }
 }
