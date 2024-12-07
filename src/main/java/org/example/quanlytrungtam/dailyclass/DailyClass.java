@@ -1,4 +1,4 @@
-package org.example.quanlytrungtam.attendances;
+package org.example.quanlytrungtam.dailyclass;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,11 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "attendences")
-public class Attendences {
+@Table(name = "dailyclass")
+public class DailyClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendencesid")
+    @Column(name = "dailyclassid")
     private Integer id;
 
     @ManyToOne
