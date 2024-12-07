@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.student;
 
+import org.example.quanlytrungtam.academicaffairs.NewFindAllClassStudentResponse;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.classes.Classes;
 import org.example.quanlytrungtam.user.User;
@@ -74,7 +75,14 @@ public class StudentService {
                 .orElseThrow(() -> new NoSuchElementException("No student found with id: " + request.getStudentId()));
         student.setStatus(Status.valueOf(request.getStatus()));
         studentRepository.save(student);
+    }
 
+    public List<NewFindAllClassStudentResponse> findAllStudentStatus(String status) {
+        Status statusEnum = Status.valueOf(status);
+        return studentRepository.listStudentStatus(statusEnum);
+    }
 
+    public NewFindStudentResponse showProfileStudent(Integer idStudent) {
+        return studentRepository.profileStudent(idStudent);
     }
 }

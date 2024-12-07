@@ -3,6 +3,7 @@ package org.example.quanlytrungtam.admin;
 import org.example.quanlytrungtam.classes.AddClassRequest;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.student.AddStudentRequest;
+import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionResponse;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.subject.AddSubjectRequest;
 import org.example.quanlytrungtam.subject.SubjectService;
@@ -52,7 +53,7 @@ public class AdminController {
     @PutMapping("api/v1/admin/{id}/block")
     public ResponseEntity<String> blockUser(@PathVariable int id) {
         userService.updateActive(id);
-        return ResponseEntity.ok("Đã chặn người dùng.");
+        return ResponseEntity.ok("Đã khóa tài khoản");
     }
 
     @PostMapping("/api/v1/admin/subjects")
@@ -95,5 +96,11 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Loi hệ thống: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/api/v1/admin/teacher-student-counts")
+    public ResponseEntity<?> getAllStudents() {
+        List<LecturerClassStudentCountProjectionResponse> data = userService.findTeacherStudentCounts();
+        return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 }

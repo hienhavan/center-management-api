@@ -6,6 +6,7 @@ import org.example.quanlytrungtam.admin.NewUserByMonthResponse;
 import org.example.quanlytrungtam.email.EmailService;
 import org.example.quanlytrungtam.exception.UserNotFoundException;
 import org.example.quanlytrungtam.admin.NewFindAllTeacherResponse;
+import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -215,5 +216,9 @@ public class UserService {
 
     public List<NewUserByMonthResponse> getUserNumberByMonthOfYear(int year) {
         return userRepository.getUserNumberByMonthOfYear(year);
+    }
+
+    public List<LecturerClassStudentCountProjectionResponse> findTeacherStudentCounts() {
+        return userRepository.getLecturerClassStudentCounts();
     }
 }

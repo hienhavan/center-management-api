@@ -35,4 +35,7 @@ public class ClassService {
         classRepository.save(classes);
     }
 
+public List<NewListClassTeachResponse> findAllClassDetails (Integer idTeacher){
+        return classRepository.findAllClassDetails(idTeacher);
+}
 }

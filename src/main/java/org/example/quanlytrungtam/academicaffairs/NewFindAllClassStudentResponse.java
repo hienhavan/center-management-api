@@ -8,4 +8,6 @@ public interface NewFindAllClassStudentResponse {
     String getEmail();
 
     String getPhoneNumber();
+
+    String getStatus();
 }
