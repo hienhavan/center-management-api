@@ -2,6 +2,8 @@ package org.example.quanlytrungtam.admin;
 
 import org.example.quanlytrungtam.classes.AddClassRequest;
 import org.example.quanlytrungtam.classes.ClassService;
+import org.example.quanlytrungtam.fee.AddFeeRequest;
+import org.example.quanlytrungtam.fee.FeeService;
 import org.example.quanlytrungtam.student.AddStudentRequest;
 import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionResponse;
 import org.example.quanlytrungtam.student.StudentService;
@@ -21,13 +23,14 @@ public class AdminController {
     private final SubjectService subjectService;
     private final UserService userService;
     private final ClassService classService;
-
+    private final FeeService feeService;
     private final StudentService studentService;
 
-    public AdminController(SubjectService subjectService, UserService userService, ClassService classService, StudentService studentService) {
+    public AdminController(SubjectService subjectService, UserService userService, ClassService classService, FeeService feeService, StudentService studentService) {
         this.subjectService = subjectService;
         this.userService = userService;
         this.classService = classService;
+        this.feeService = feeService;
         this.studentService = studentService;
     }
 
@@ -102,5 +105,17 @@ public class AdminController {
     public ResponseEntity<?> getAllStudents() {
         List<LecturerClassStudentCountProjectionResponse> data = userService.findTeacherStudentCounts();
         return ResponseEntity.status(HttpStatus.OK).body(data);
+    }
+
+    @PostMapping("/api/v1/admin/add-fee")
+    public ResponseEntity<?> addFee(@RequestBody AddFeeRequest request) {
+        try {
+            feeService.save(request);
+            return ResponseEntity.ok("thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Loi hệ thống: " + e.getMessage());
+        }
     }
 }
