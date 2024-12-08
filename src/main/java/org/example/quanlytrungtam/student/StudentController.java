@@ -10,10 +10,7 @@ import org.example.quanlytrungtam.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -47,8 +44,8 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping("/api/v1/student/payFee")
-    public ResponseEntity<?> payFee(@RequestParam(name = "idFee", required = false) Integer idFee) {
+    @GetMapping("/api/v1/student/payFee/{idFee}")
+    public ResponseEntity<?> payFee(@PathVariable Integer idFee) {
         feeService.update(idFee);
         return new ResponseEntity<>(HttpStatus.OK);
     }

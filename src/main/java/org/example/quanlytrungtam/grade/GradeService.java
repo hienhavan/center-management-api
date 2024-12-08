@@ -1,6 +1,7 @@
 package org.example.quanlytrungtam.grade;
 
-import org.example.quanlytrungtam.admin.NewAverageGradesByClass;
+import org.example.quanlytrungtam.admin.NewAverageGradesByClassResponse;
+import org.example.quanlytrungtam.admin.NewAvgGradeStudentClassResponse;
 import org.example.quanlytrungtam.student.Student;
 import org.example.quanlytrungtam.student.StudentRepository;
 import org.example.quanlytrungtam.subject.Subject;
@@ -57,8 +58,12 @@ public class GradeService {
         gradeRepository.save(grade);
     }
 
-    public List<NewAverageGradesByClass> listAvgGradesByClass() {
+    public List<NewAverageGradesByClassResponse> listAvgGradesByClass() {
         return gradeRepository.listAverageGradesByClass();
+    }
+
+    public List<NewAvgGradeStudentClassResponse> listAvgGradeStudentClass(Integer classId) {
+        return gradeRepository.listAverageGradeByStudentAndClass(classId);
     }
 }
 

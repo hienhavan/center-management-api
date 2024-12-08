@@ -11,6 +11,8 @@ import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.subject.AddSubjectRequest;
 import org.example.quanlytrungtam.subject.SubjectService;
 import org.example.quanlytrungtam.user.AddUserRequest;
+import org.example.quanlytrungtam.user.FindUserResponse;
+import org.example.quanlytrungtam.user.Role;
 import org.example.quanlytrungtam.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +54,6 @@ public class AdminController {
     @GetMapping("/api/v1/admin/new-users")
     public ResponseEntity<List<NewUserByMonthResponse>> getUserNumberByMonthOfYear(@RequestParam(name = "year") int year) {
         List<NewUserByMonthResponse> data = userService.getUserNumberByMonthOfYear(year);
-
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -124,7 +125,27 @@ public class AdminController {
 
     @GetMapping("/api/v1/admin/list-avg-class")
     public ResponseEntity<?> getAvgClass() {
-        List<NewAverageGradesByClass> data = gradeService.listAvgGradesByClass();
+        List<NewAverageGradesByClassResponse> data = gradeService.listAvgGradesByClass();
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
+
+    @GetMapping("/api/v1/admin/list-avg-student-class/{idClass}")
+    public ResponseEntity<?> getAvgStudentClass(@PathVariable Integer idClass) {
+        List<NewAvgGradeStudentClassResponse> data = gradeService.listAvgGradeStudentClass(idClass);
+        return ResponseEntity.status(HttpStatus.OK).body(data);
+    }
+    @GetMapping("/api/v1/admin/users")
+    public ResponseEntity<?> findFriendsByName(@RequestParam(name = "name", required = false) String name) {
+        try {
+            List<FindUserResponse> findFriendsByName = userService.findByName(name);
+            if (findFriendsByName.isEmpty()) {
+                return ResponseEntity.ok("Không tìm thấy người dùng.");
+            }
+            return ResponseEntity.ok(findFriendsByName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Tìm kiếm bạn bè thất bại.");
+        }
+    }
+
 }

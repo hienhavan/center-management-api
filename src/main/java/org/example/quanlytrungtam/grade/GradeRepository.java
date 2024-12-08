@@ -1,6 +1,7 @@
 package org.example.quanlytrungtam.grade;
 
-import org.example.quanlytrungtam.admin.NewAverageGradesByClass;
+import org.example.quanlytrungtam.admin.NewAverageGradesByClassResponse;
+import org.example.quanlytrungtam.admin.NewAvgGradeStudentClassResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,9 +31,16 @@ public interface GradeRepository extends JpaRepository<Grades, Integer> {
             "WHERE g.gradeId = :gradeId")
     Optional<ShowStudentGradeResponse> findStudentGradeDetailsByGradeId(@Param("gradeId") Integer idGrade);
 
-    @Query("SELECT g.student.classID.className AS className, AVG(g.averageGrade) AS averageGrades " +
+    @Query("SELECT g.student.classID.classId AS classId, g.student.classID.className AS className, AVG(g.averageGrade) AS averageGrades,g.student.classID.lecturer.fullName AS teacher,g.student.classID.lecturer.phoneNumber AS phoneNumber, g.student.classID.lecturer.email AS email " +
             "FROM Grades g " +
             "GROUP BY g.student.classID.className")
-    List<NewAverageGradesByClass> listAverageGradesByClass();
+    List<NewAverageGradesByClassResponse> listAverageGradesByClass();
+
+    @Query("SELECT g.student.userID.fullName AS nameStudent,g.student.userID.phoneNumber AS phoneNumber ,g.student.userID.email AS email, g.student.classID.className AS nameClass, AVG(g.averageGrade) AS averageGrade " +
+            "FROM Grades g " +
+            "WHERE g.student.classID.classId = :idClass " +
+            "GROUP BY g.student.userID.fullName, g.student.classID.className")
+    List<NewAvgGradeStudentClassResponse> listAverageGradeByStudentAndClass(@Param("idClass") Integer idClass);
+
 
 }

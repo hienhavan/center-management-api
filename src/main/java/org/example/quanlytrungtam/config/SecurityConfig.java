@@ -54,11 +54,12 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/login", "/v1/auth/**", "/image/**", "/api/v1/user/find-email", "/api/v1/user/reset-password").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/login", "/image/**", "/api/v1/user/find-email", "/api/v1/user/reset-password").permitAll()
+                        .requestMatchers("/api/v1/admin/**", "/api/v1/me").hasAnyRole("ADMIN")
                         .requestMatchers("/api/v1/academic-affairs/**").hasAnyRole("ACADEMICAFFAIRS")
                         .requestMatchers("/api/v1/teacher/**").hasAnyRole("TEACHER")
                         .requestMatchers("/api/v1/student/**").hasAnyRole("STUDENT")
+                        .requestMatchers("/api/v1/me").hasAnyRole("ADMIN", "STUDENT", "TEACHER")
                         .requestMatchers("/api/v1/**").authenticated()
                 )
                 .build();

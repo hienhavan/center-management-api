@@ -26,13 +26,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("api/v1/users/{id}")
+    @GetMapping("/api/v1/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         userService.findById(id);
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @GetMapping("api/v1/me")
+    @GetMapping("/api/v1/me")
     public ResponseEntity<?> informationUser(Principal principal) {
         try {
             String email = principal.getName();
@@ -75,7 +75,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("api/v1/user/find-email")
+    @PostMapping("/api/v1/user/find-email")
     public ResponseEntity<String> findPassword(@RequestBody EmailRequest email) {
         try {
             userService.findPassword(email.getEmail(), httpSession);
@@ -87,7 +87,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("api/v1/user/reset-password")
+    @PostMapping("/api/v1/user/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody RestPasswordRequest request) {
         String email = (String) httpSession.getAttribute("resetEmail");
         if (email == null) {
