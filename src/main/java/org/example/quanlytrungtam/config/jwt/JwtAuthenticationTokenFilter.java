@@ -53,7 +53,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 }
             }
         }
-        // Tiến hành filter chain
         filterChain.doFilter(request, response);
     }
 

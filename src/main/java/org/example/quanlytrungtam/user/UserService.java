@@ -4,12 +4,17 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.quanlytrungtam.admin.NewUserByMonthResponse;
 import org.example.quanlytrungtam.email.EmailService;
+import org.example.quanlytrungtam.email.SendEmailRequest;
 import org.example.quanlytrungtam.exception.UserNotFoundException;
 import org.example.quanlytrungtam.admin.NewFindAllTeacherResponse;
 import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +36,11 @@ public class UserService {
     private final EmailService emailService;
     @Value("${upload.image}")
     private String uploadDir;
+    private final RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
@@ -73,7 +84,8 @@ public class UserService {
         String password = request.getPassword();
         String subject = "Your account has been created";
         String text = String.format("Hello %s,\n\nYour account has been created successfully.\nAccount: %s\nPassword: %s\n\nBest regards", username, email, password);
-        emailService.sendEmail(email, subject, text);
+        SendEmailRequest sendEmailRequest = new SendEmailRequest(email, subject, text);
+        kafkaTemplate.send("email-topic", sendEmailRequest);
     }
 
     public void update(int id, FormUpdateRequest request) throws UserNotFoundException {
@@ -172,31 +184,60 @@ public class UserService {
         }
     }
 
-    public void findPassword(String email, HttpSession session) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-        Random random = new Random();
-        String code = String.valueOf(random.nextInt(9000) + 1000);
-        session.setAttribute("code", code);
-        session.setMaxInactiveInterval(30 * 60);
-        String name = user.getFullName();
-        String subject = "Request Password Recovery";
-        String text = String.format("Hello %s,\n\nYour password recovery request has been successful, please enter the following code in the Code section of the website to continue:\nCode: %s\n\nIf it's not you, there's no need to do anything.", name, code);
-        emailService.sendEmail(email, subject, text);
-        session.setAttribute("resetEmail", email);
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int TIME_WINDOW = 60 * 60;
+
+    public boolean isRequestAllowed(String key) {
+        String redisKey = "reset-password:" + key;
+        Integer currentAttempts = stringRedisTemplate.opsForValue().get(redisKey) != null
+                ? Integer.parseInt(stringRedisTemplate.opsForValue().get(redisKey))
+                : 0;
+
+        if (currentAttempts >= MAX_ATTEMPTS) {
+            return false;
+        }
+        redisTemplate.opsForValue().increment(redisKey, 1);
+        if (currentAttempts == 0) {
+            redisTemplate.expire(redisKey, TIME_WINDOW, TimeUnit.SECONDS);
+        }
+        return true;
     }
 
-    public void changePassword(String email, String enteredCode, String newPassword, HttpSession session) {
+    public String redisSendFindPassword(Integer idUser, String email) {
+        Random random = new Random();
+        String code = String.valueOf(random.nextInt(9000) + 1000);
+        String redisKeyCode = "user:" + idUser;
+        String redisKeyEmail = "email:" + email;
+        redisTemplate.opsForValue().set(redisKeyCode, code, 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKeyEmail, email, 30, TimeUnit.SECONDS);
+        return code;
+    }
+
+    public void findPassword(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-        String code = (String) session.getAttribute("code");
+        Integer idUser = user.getId();
+        String code = redisSendFindPassword(idUser, email);
+        String name = user.getFullName();
+        String subject = "Request Password Recovery";
+        String text = String.format("Hello %s,\n\nYour password recovery request has been successful, please enter the following code in the Codes section of the website to continue: the code is valid for 30 seconds\nCode: %s\n\nIf it's not you, there's no need to do anything.", name, code);
+        SendEmailRequest request = new SendEmailRequest(email, subject, text);
+        kafkaTemplate.send("send-code-password-topic", request);
+    }
+
+    public void changePassword(String email, String enteredCode, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        Integer idUser = user.getId();
+        String code = (String) redisTemplate.opsForValue().get("user:" + idUser);
         if (code != null && code.equals(enteredCode)) {
             user.setPassword(encodePassword(newPassword));
             userRepository.save(user);
             String name = user.getFullName();
             String subject = "Password change successful";
             String text = String.format("Hello %s,\n\nYour password recovery request has been successful, Your new password is:\nPassword: %s\n\nPlease protect it and do not share it with anyone.", name, newPassword);
-            emailService.sendEmail(email, subject, text);
+            SendEmailRequest request = new SendEmailRequest(email, subject, text);
+            kafkaTemplate.send("send-new-password-topic", request);
         } else {
             throw new UserNotFoundException("Invalid recovery code: " + enteredCode);
         }

@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.example.quanlytrungtam.config.jwt.JwtResponse;
+import org.example.quanlytrungtam.email.SendEmailRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -33,6 +34,7 @@ public class KafkaConfig {
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
+
     @Bean
     public ConsumerFactory<String, JwtResponse> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -48,6 +50,24 @@ public class KafkaConfig {
     public ConcurrentKafkaListenerContainerFactory<String, JwtResponse> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, JwtResponse> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, SendEmailRequest> consumerFactoryEmail() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Địa chỉ Kafka broker
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "user-group"); // ID của group consumer
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class); // Deserializer cho key
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class); // Deserializer cho value
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // Cho phép deserializing các lớp trong package bất kỳ
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(SendEmailRequest.class));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, SendEmailRequest> kafkaListenerContainerFactoryEmail() {
+        ConcurrentKafkaListenerContainerFactory<String, SendEmailRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryEmail());
         return factory;
     }
 }

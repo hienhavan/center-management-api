@@ -5,6 +5,7 @@ import org.example.quanlytrungtam.config.jwt.JwtService;
 import org.example.quanlytrungtam.email.EmailRequest;
 import org.example.quanlytrungtam.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +21,13 @@ public class UserController {
     private HttpSession httpSession;
     private final JwtService jwtService;
     private final UserService userService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public UserController(JwtService jwtService, UserService userService) {
+
+    public UserController(JwtService jwtService, UserService userService, RedisTemplate<String, Object> redisTemplate) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.redisTemplate = redisTemplate;
     }
 
     @GetMapping("/api/v1/users/{id}")
@@ -78,7 +82,7 @@ public class UserController {
     @PostMapping("/api/v1/user/find-email")
     public ResponseEntity<String> findPassword(@RequestBody EmailRequest email) {
         try {
-            userService.findPassword(email.getEmail(), httpSession);
+            userService.findPassword(email.getEmail());
             return ResponseEntity.ok("Email khôi phục mật khẩu đã được gửi.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404).body("Không tìm thấy người dùng");
@@ -87,16 +91,16 @@ public class UserController {
         }
     }
 
-    @PostMapping("/api/v1/user/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody RestPasswordRequest request) {
-        String email = (String) httpSession.getAttribute("resetEmail");
-        if (email == null) {
-            return ResponseEntity.status(400).body("Không tìm thấy email");
+    @PostMapping("/api/v1/user/reset-password/{emailReq}")
+    public ResponseEntity<String> resetPassword(@PathVariable String emailReq, @RequestBody RestPasswordRequest request) {
+        String email = (String) redisTemplate.opsForValue().get("email:" + emailReq);
+        String key = "email:" + email;
+        if (!userService.isRequestAllowed(key)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(" gửi quá nhiều yêu cầu");
         }
         try {
-            userService.changePassword(email, request.getCode(), request.getNewPassword(), httpSession);
-            httpSession.removeAttribute("resetEmail");
-            httpSession.removeAttribute("code");
+            userService.changePassword(email, request.getCode(), request.getNewPassword());
             return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404)
