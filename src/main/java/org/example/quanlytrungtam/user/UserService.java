@@ -41,6 +41,8 @@ public class UserService {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int TIME_WINDOW = 60 * 60;
 
     public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
@@ -184,15 +186,11 @@ public class UserService {
         }
     }
 
-    private static final int MAX_ATTEMPTS = 5;
-    private static final int TIME_WINDOW = 60 * 60;
-
     public boolean isRequestAllowed(String key) {
         String redisKey = "reset-password:" + key;
-        Integer currentAttempts = stringRedisTemplate.opsForValue().get(redisKey) != null
+        int currentAttempts = stringRedisTemplate.opsForValue().get(redisKey) != null
                 ? Integer.parseInt(stringRedisTemplate.opsForValue().get(redisKey))
                 : 0;
-
         if (currentAttempts >= MAX_ATTEMPTS) {
             return false;
         }

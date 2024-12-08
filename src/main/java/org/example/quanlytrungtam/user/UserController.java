@@ -81,9 +81,15 @@ public class UserController {
 
     @PostMapping("/api/v1/user/find-email")
     public ResponseEntity<String> findPassword(@RequestBody EmailRequest email) {
+        String emails = email.getEmail();
+        String key = "email:" + emails;
+        if (!userService.isRequestAllowed(key)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("quá nhiều yêu cầu");
+        }
         try {
             userService.findPassword(email.getEmail());
-            return ResponseEntity.ok("Email khôi phục mật khẩu đã được gửi.");
+            return ResponseEntity.ok("Email đã gửi.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404).body("Không tìm thấy người dùng");
         } catch (Exception e) {
@@ -94,11 +100,6 @@ public class UserController {
     @PostMapping("/api/v1/user/reset-password/{emailReq}")
     public ResponseEntity<String> resetPassword(@PathVariable String emailReq, @RequestBody RestPasswordRequest request) {
         String email = (String) redisTemplate.opsForValue().get("email:" + emailReq);
-        String key = "email:" + email;
-        if (!userService.isRequestAllowed(key)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .body(" gửi quá nhiều yêu cầu");
-        }
         try {
             userService.changePassword(email, request.getCode(), request.getNewPassword());
             return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công.");
