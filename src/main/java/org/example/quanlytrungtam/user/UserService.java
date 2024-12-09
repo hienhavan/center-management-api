@@ -201,6 +201,11 @@ public class UserService {
         return true;
     }
 
+    public void logout(Integer idUser) {
+        String redisKey = "user:" + idUser + ":tokens";
+        redisTemplate.delete(redisKey);
+    }
+
     public String redisSendFindPassword(Integer idUser, String email) {
         Random random = new Random();
         String code = String.valueOf(random.nextInt(9000) + 1000);

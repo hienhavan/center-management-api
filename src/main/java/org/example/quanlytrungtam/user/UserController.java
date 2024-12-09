@@ -1,31 +1,22 @@
 package org.example.quanlytrungtam.user;
 
-import jakarta.servlet.http.HttpSession;
-import org.example.quanlytrungtam.config.jwt.JwtService;
 import org.example.quanlytrungtam.email.EmailRequest;
 import org.example.quanlytrungtam.exception.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
-import java.time.LocalDate;
 
 @RestController
 @CrossOrigin(origins = "*")
 public class UserController {
-    @Autowired
-    private HttpSession httpSession;
-    private final JwtService jwtService;
     private final UserService userService;
     private final RedisTemplate<String, Object> redisTemplate;
 
 
-    public UserController(JwtService jwtService, UserService userService, RedisTemplate<String, Object> redisTemplate) {
-        this.jwtService = jwtService;
+    public UserController(UserService userService, RedisTemplate<String, Object> redisTemplate) {
         this.userService = userService;
         this.redisTemplate = redisTemplate;
     }
@@ -64,12 +55,25 @@ public class UserController {
         }
     }
 
+    @GetMapping("/api/v1/users/logout")
+    public ResponseEntity<?> logout(Principal principal) {
+        try {
+            Integer idUser = userService.findByEmail(principal.getName()).getId();
+            userService.logout(idUser);
+            return ResponseEntity.ok("Đăng xuất thành công");
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại hoặc không hợp lệ");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã xảy ra lỗi khi xử lý yêu cầu");
+        }
+    }
+
     @PutMapping("/api/v1/me/password")
     public ResponseEntity<String> updatePassword(
             Principal principal,
             @RequestBody UpdatePasswordRequest request) {
         try {
-            int id = userService.findByEmail(principal.getName()).getId();
+            Integer id = userService.findByEmail(principal.getName()).getId();
             if (userService.updatePassword(id, request.getNewPassword(), request.getCurrentPassword()) != null) {
                 return ResponseEntity.ok("cập nhật thành công");
             }
