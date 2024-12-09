@@ -81,6 +81,12 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
+    @GetMapping("/api/v1/admin/all-students")
+    public ResponseEntity<?> getAllStudent() {
+        List<NewFindAllTeacherResponse> data = userService.findAllStudent();
+        return ResponseEntity.status(HttpStatus.OK).body(data);
+    }
+
     @PostMapping("/api/v1/admin/add-class")
     public ResponseEntity<?> addClass(@RequestBody AddClassRequest request) {
         try {

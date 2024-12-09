@@ -251,6 +251,10 @@ public class UserService {
         return userRepository.findByRoles(Role.ROLE_TEACHER);
     }
 
+    public List<NewFindAllTeacherResponse> findAllStudent() throws UserNotFoundException {
+        return userRepository.findByRoles(Role.ROLE_STUDENT);
+    }
+
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
