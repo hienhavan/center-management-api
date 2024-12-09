@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.admin;
 
+import org.example.quanlytrungtam.academicaffairs.NewFindAllClassResponse;
 import org.example.quanlytrungtam.classes.AddClassRequest;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.fee.AddFeeRequest;
@@ -127,6 +128,12 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Loi hệ thống: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/api/v1/admin/list-class")
+    public ResponseEntity<?> getAllListClasses() {
+        List<NewFindAllClassResponse> data = classService.listClass();
+        return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
     @GetMapping("/api/v1/admin/list-avg-class")
