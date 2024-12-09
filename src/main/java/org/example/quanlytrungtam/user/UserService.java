@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
     @Value("${upload.image}")
     private String uploadDir;
     private final RedisTemplate<String, Object> redisTemplate;

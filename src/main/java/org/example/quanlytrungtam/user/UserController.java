@@ -41,7 +41,6 @@ public class UserController {
         }
     }
 
-
     @PutMapping("/api/v1/me")
     public ResponseEntity<String> updateUser(@ModelAttribute FormUpdateRequest profilePicture, Principal principal) {
         try {
@@ -62,7 +61,7 @@ public class UserController {
             userService.logout(idUser);
             return ResponseEntity.ok("Đăng xuất thành công");
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại hoặc không hợp lệ");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã xảy ra lỗi khi xử lý yêu cầu");
         }

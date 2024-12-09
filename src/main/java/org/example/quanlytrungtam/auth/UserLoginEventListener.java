@@ -22,7 +22,5 @@ public class UserLoginEventListener {
 //        System.out.println(redisTemplate.keys(redisKey));
         redisTemplate.delete(redisKey);
         redisTemplate.opsForValue().set(redisKey, event.getToken());
-        System.out.println(redisTemplate.opsForValue().get(redisKey));
     }
-
 }
