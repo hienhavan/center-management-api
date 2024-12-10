@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.student;
 
+import org.example.quanlytrungtam.config.page.PageResponse;
 import org.example.quanlytrungtam.fee.FeeService;
 import org.example.quanlytrungtam.fee.NewFindFeeResponse;
 import org.example.quanlytrungtam.grade.GradeService;
@@ -7,6 +8,7 @@ import org.example.quanlytrungtam.grade.ShowStudentGradeResponse;
 import org.example.quanlytrungtam.grade.ShowStudentGradesResponse;
 import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserService;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +52,12 @@ public class StudentController {
     }
 
     @GetMapping("/api/v1/student/list-grade")
-    public ResponseEntity<?> getStudentGrades(Principal principal) {
+    public ResponseEntity<?> getStudentGrades(Principal principal,
+                                              @RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "10") int size) {
         User user = userService.findByEmail(principal.getName());
         Integer idUser = user.getId();
-        List<ShowStudentGradesResponse> data = gradeService.getAllStudentGrades(idUser);
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+        Slice<ShowStudentGradesResponse> data = gradeService.getAllStudentGrades(idUser, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 }

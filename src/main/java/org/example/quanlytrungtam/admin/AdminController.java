@@ -15,6 +15,7 @@ import org.example.quanlytrungtam.user.AddUserRequest;
 import org.example.quanlytrungtam.user.FindUserResponse;
 import org.example.quanlytrungtam.user.Role;
 import org.example.quanlytrungtam.user.UserService;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -131,8 +132,9 @@ public class AdminController {
     }
 
     @GetMapping("/api/v1/admin/list-class")
-    public ResponseEntity<?> getAllListClasses() {
-        List<NewFindAllClassResponse> data = classService.listClass();
+    public ResponseEntity<?> getAllListClasses(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        Slice<NewFindAllClassResponse> data = classService.listClass(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -147,6 +149,7 @@ public class AdminController {
         List<NewAvgGradeStudentClassResponse> data = gradeService.listAvgGradeStudentClass(idClass);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
+
     @GetMapping("/api/v1/admin/users")
     public ResponseEntity<?> findFriendsByName(@RequestParam(name = "name", required = false) String name) {
         try {

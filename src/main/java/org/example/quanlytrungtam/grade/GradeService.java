@@ -7,6 +7,9 @@ import org.example.quanlytrungtam.student.StudentRepository;
 import org.example.quanlytrungtam.subject.Subject;
 import org.example.quanlytrungtam.subject.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +28,9 @@ public class GradeService {
         return gradeRepository.findById(idGrade).orElse(null);
     }
 
-    public List<ShowStudentGradesResponse> getAllStudentGrades(Integer idStudent) {
-        return gradeRepository.findStudentGradesByStudentId(idStudent);
+    public Slice<ShowStudentGradesResponse> getAllStudentGrades(Integer idStudent, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gradeRepository.findStudentGradesByStudentId(idStudent,pageable);
     }
 
     public Optional<FindGradeIdResponse> getGrade(Integer idGrade) {

@@ -4,6 +4,7 @@ import org.example.quanlytrungtam.academicaffairs.AcademicAffairsService;
 import org.example.quanlytrungtam.academicaffairs.NewFindAllClassStudentResponse;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.classes.NewListClassTeachResponse;
+import org.example.quanlytrungtam.config.page.PageResponse;
 import org.example.quanlytrungtam.dailyclass.AddDailyClassRequest;
 import org.example.quanlytrungtam.dailyclass.DailyClassService;
 import org.example.quanlytrungtam.dailyclass.NewfindListDailyClassResponse;
@@ -14,6 +15,7 @@ import org.example.quanlytrungtam.student.NewFindStudentResponse;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserService;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,21 +43,25 @@ public class TeacherController {
     }
 
     @GetMapping("/api/v1/teacher/all-classes")
-    public ResponseEntity<?> listClass(Principal principal) {
+    public ResponseEntity<?> listClass(Principal principal,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
         User user = userService.findByEmail(principal.getName());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User không tồn tại");
         } else {
             Integer idUser = user.getId();
-            List<NewListClassTeachResponse> data = classService.findAllClassDetails(idUser);
-            return ResponseEntity.status(HttpStatus.OK).body(data);
+            Slice<NewListClassTeachResponse> data = classService.findAllClassDetails(idUser, page, size);
+            return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
         }
     }
 
     @GetMapping("/api/v1/teacher/list-student")
-    public ResponseEntity<?> getAllListStudents(@RequestParam(name = "idClass", required = false) Integer idClass) {
-        List<NewFindAllClassStudentResponse> data = academicAffairsService.listStudent(idClass);
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+    public ResponseEntity<?> getAllListStudents(@RequestParam(name = "idClass", required = false) Integer idClass,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+        Slice<NewFindAllClassStudentResponse> data = academicAffairsService.listStudent(idClass, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 
     @GetMapping("/api/v1/teacher/delete-daily-class/{idDaily}")
@@ -108,7 +114,7 @@ public class TeacherController {
         User user = userService.findByEmail(principal.getName());
         Integer idTeacher = user.getId();
         try {
-            dailyStudentService.save(request,idTeacher);
+            dailyStudentService.save(request, idTeacher);
             return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

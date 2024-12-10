@@ -2,6 +2,8 @@ package org.example.quanlytrungtam.grade;
 
 import org.example.quanlytrungtam.admin.NewAverageGradesByClassResponse;
 import org.example.quanlytrungtam.admin.NewAvgGradeStudentClassResponse;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,7 +31,7 @@ public interface GradeRepository extends JpaRepository<Grades, Integer> {
             "JOIN g.student s " +
             "JOIN g.subject sub " +
             "WHERE s.studentId = :studentId")
-    List<ShowStudentGradesResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId);
+    Slice<ShowStudentGradesResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId, Pageable pageable);
 
     @Query("SELECT new org.example.quanlytrungtam.grade.FindGradeIdResponse(c.className, s.userID.fullName, sub.subjectName, " +
             "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId,g.theoryGrade, g.practicalGrade, " +

@@ -4,6 +4,9 @@ import org.example.quanlytrungtam.academicaffairs.NewFindAllClassResponse;
 import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +21,9 @@ public class ClassService {
         this.userService = userService;
     }
 
-    public List<NewFindAllClassResponse> listClass() {
-        return classRepository.findAlls();
+    public Slice<NewFindAllClassResponse> listClass(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return classRepository.findAlls(pageable);
     }
 
     public Classes findById(Integer id) {
@@ -35,7 +39,8 @@ public class ClassService {
         classRepository.save(classes);
     }
 
-public List<NewListClassTeachResponse> findAllClassDetails (Integer idTeacher){
-        return classRepository.findAllClassDetails(idTeacher);
-}
+    public Slice<NewListClassTeachResponse> findAllClassDetails(Integer idTeacher, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return classRepository.findAllClassDetails(idTeacher, pageable);
+    }
 }

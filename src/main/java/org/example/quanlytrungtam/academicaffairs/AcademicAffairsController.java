@@ -1,10 +1,12 @@
 package org.example.quanlytrungtam.academicaffairs;
 
 import org.example.quanlytrungtam.classes.ClassService;
+import org.example.quanlytrungtam.config.page.PageResponse;
 import org.example.quanlytrungtam.grade.*;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.subject.Subject;
 import org.example.quanlytrungtam.subject.SubjectService;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,21 +32,26 @@ public class AcademicAffairsController {
     }
 
     @GetMapping("/api/v1/academic-affairs/list-class")
-    public ResponseEntity<?> getAllListClasses() {
-        List<NewFindAllClassResponse> data = classService.listClass();
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+    public ResponseEntity<?> getAllListClasses(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        Slice<NewFindAllClassResponse> data = classService.listClass(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 
     @GetMapping("/api/v1/academic-affairs/list-student")
-    public ResponseEntity<?> getAllListStudents(@RequestParam(name = "idClass", required = false) Integer idClass) {
-        List<NewFindAllClassStudentResponse> data = academicAffairsService.listStudent(idClass);
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+    public ResponseEntity<?> getAllListStudents(@RequestParam(name = "idClass", required = false) Integer idClass,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+        Slice<NewFindAllClassStudentResponse> data = academicAffairsService.listStudent(idClass, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 
     @GetMapping("/api/v1/academic-affairs/list-grade")
-    public ResponseEntity<?> getAllListGrade(@RequestParam(name = "idStudent", required = false) Integer idStudent) {
-        List<ShowStudentGradesResponse> data = gradesService.getAllStudentGrades(idStudent);
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+    public ResponseEntity<?> getAllListGrade(@RequestParam(name = "idStudent", required = false) Integer idStudent,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        Slice<ShowStudentGradesResponse> data = gradesService.getAllStudentGrades(idStudent, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 
     @GetMapping("/api/v1/academic-affairs/grade")
