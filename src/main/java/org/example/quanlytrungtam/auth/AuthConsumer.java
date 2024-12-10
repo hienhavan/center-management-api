@@ -7,10 +7,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserLoginEventListener {
+public class AuthConsumer {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public UserLoginEventListener(RedisTemplate<String, Object> redisTemplate) {
+    public AuthConsumer(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
