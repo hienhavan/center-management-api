@@ -35,7 +35,7 @@ public class DailyStudentService {
     LocalDateTime currentDateTime = LocalDateTime.now();
 
     public void save(AddDailyStudentRequest request, Integer idTeacher) {
-        Student student = studentService.findById(request.getStudentId());
+        Student student = studentService.findById(request.getIdStudent());
         User user = userService.findById(idTeacher);
         var dailyStudent = DailyStudent.builder()
                 .student(student)

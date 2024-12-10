@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class AddDailyStudentRequest {
-    private Integer studentId;
+    private Integer idStudent;
     private String context;
 }

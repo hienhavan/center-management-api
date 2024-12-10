@@ -26,7 +26,7 @@ public class DailyStudent {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "classid", nullable = false)
+    @JoinColumn(name = "studenid", nullable = false)
     private Student student;
 
     @ManyToOne

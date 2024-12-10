@@ -77,7 +77,7 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping("/api/v1/teacher/list-daily/{idStudent}")
+    @GetMapping("/api/v1/teacher/list-daily-student/{idStudent}")
     public ResponseEntity<?> getAllListDailyStudent(@PathVariable Integer idStudent) {
         List<NewfindListDailyStudentResponse> data = dailyStudentService.getNewFindListDaily(idStudent);
         return ResponseEntity.status(HttpStatus.OK).body(data);
