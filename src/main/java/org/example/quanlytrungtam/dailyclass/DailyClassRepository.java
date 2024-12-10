@@ -11,5 +11,5 @@ import java.util.List;
 public interface DailyClassRepository extends JpaRepository<DailyClass, Integer> {
     @Query("SELECT d.id AS idDaily, d.lecturer.fullName AS nameTeacher, d.creationDate AS dueDate, d.context AS context " +
             "FROM DailyClass d WHERE d.classes.classId = :idClass")
-    List<NewfindListDailyResponse> findDailyClassesByClassId(@Param("idClass") Integer idClass);
+    List<NewfindListDailyClassResponse> findDailyClassesByClassId(@Param("idClass") Integer idClass);
 }

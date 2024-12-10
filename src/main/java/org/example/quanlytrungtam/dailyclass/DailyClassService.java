@@ -1,10 +1,8 @@
 package org.example.quanlytrungtam.dailyclass;
 
-import org.example.quanlytrungtam.classes.ClassRepository;
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.classes.Classes;
 import org.example.quanlytrungtam.user.User;
-import org.example.quanlytrungtam.user.UserRepository;
 import org.example.quanlytrungtam.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,16 +22,19 @@ public class DailyClassService {
         this.classService = classService;
     }
 
-    public List<NewfindListDailyResponse> getNewFindListDaily(Integer idClass) {
+    public List<NewfindListDailyClassResponse> getNewFindListDaily(Integer idClass) {
         return dailyClassRepository.findDailyClassesByClassId(idClass);
     }
 
     LocalDateTime currentDateTime = LocalDateTime.now();
 
+    public void delete(Integer idDaily) {
+        dailyClassRepository.deleteById(idDaily);
+    }
 
-    public void save(AddDailyClassRequest request) {
+    public void save(AddDailyClassRequest request, Integer idTeacher) {
         Classes classes = classService.findById(request.getIdClass());
-        User user = userService.findById(request.getTeacherId());
+        User user = userService.findById(idTeacher);
         var dailyClass = DailyClass.builder()
                 .classes(classes)
                 .lecturer(user)

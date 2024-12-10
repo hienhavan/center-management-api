@@ -7,6 +7,5 @@ import lombok.Data;
 @Builder
 public class AddDailyClassRequest {
     private Integer idClass;
-    private Integer teacherId;
     private String context;
 }

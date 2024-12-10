@@ -1,5 +1,6 @@
 package org.example.quanlytrungtam.dailystudent;
 
+import org.example.quanlytrungtam.dailyclass.NewfindListDailyClassResponse;
 import org.example.quanlytrungtam.student.Student;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.user.User;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -22,11 +24,19 @@ public class DailyStudentService {
         this.studentService = studentService;
     }
 
+    public void delete(Integer idDaily) {
+        dailyStudentRepository.deleteById(idDaily);
+    }
+
+    public List<NewfindListDailyStudentResponse> getNewFindListDaily(Integer idStudent) {
+        return dailyStudentRepository.findDailyStudentByClassId(idStudent);
+    }
+
     LocalDateTime currentDateTime = LocalDateTime.now();
 
-    public void save(AddDailyStudentRequest request) {
+    public void save(AddDailyStudentRequest request, Integer idTeacher) {
         Student student = studentService.findById(request.getStudentId());
-        User user = userService.findById(request.getTeacherId());
+        User user = userService.findById(idTeacher);
         var dailyStudent = DailyStudent.builder()
                 .student(student)
                 .lecturer(user)

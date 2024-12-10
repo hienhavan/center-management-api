@@ -5,11 +5,11 @@ import org.example.quanlytrungtam.academicaffairs.NewFindAllClassStudentResponse
 import org.example.quanlytrungtam.classes.ClassService;
 import org.example.quanlytrungtam.classes.NewListClassTeachResponse;
 import org.example.quanlytrungtam.dailyclass.AddDailyClassRequest;
-import org.example.quanlytrungtam.dailyclass.DailyClass;
 import org.example.quanlytrungtam.dailyclass.DailyClassService;
+import org.example.quanlytrungtam.dailyclass.NewfindListDailyClassResponse;
 import org.example.quanlytrungtam.dailystudent.AddDailyStudentRequest;
-import org.example.quanlytrungtam.dailystudent.DailyStudent;
 import org.example.quanlytrungtam.dailystudent.DailyStudentService;
+import org.example.quanlytrungtam.dailystudent.NewfindListDailyStudentResponse;
 import org.example.quanlytrungtam.student.NewFindStudentResponse;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.user.User;
@@ -58,9 +58,28 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping("/api/v1/teacher/list-student-status")
-    public ResponseEntity<?> getAllListStudentsStatus(@RequestParam(name = "status", required = false) String status) {
-        List<NewFindAllClassStudentResponse> data = studentService.findAllStudentStatus(status);
+    @GetMapping("/api/v1/teacher/delete-daily-class/{idDaily}")
+    public ResponseEntity<?> deleteDailyClass(@PathVariable Integer idDaily) {
+        dailyClassService.delete(idDaily);
+        return ResponseEntity.ok("thanh cong");
+    }
+
+    @GetMapping("/api/v1/teacher/delete-daily-student/{idDaily}")
+    public ResponseEntity<?> deleteDailyStudent(@PathVariable Integer idDaily) {
+        dailyStudentService.delete(idDaily);
+        return ResponseEntity.ok("thanh cong");
+    }
+
+
+    @GetMapping("/api/v1/teacher/list-daily/{idClass}")
+    public ResponseEntity<?> getAllListDailyClass(@PathVariable Integer idClass) {
+        List<NewfindListDailyClassResponse> data = dailyClassService.getNewFindListDaily(idClass);
+        return ResponseEntity.status(HttpStatus.OK).body(data);
+    }
+
+    @GetMapping("/api/v1/teacher/list-daily/{idStudent}")
+    public ResponseEntity<?> getAllListDailyStudent(@PathVariable Integer idStudent) {
+        List<NewfindListDailyStudentResponse> data = dailyStudentService.getNewFindListDaily(idStudent);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -71,9 +90,11 @@ public class TeacherController {
     }
 
     @PostMapping("/api/v1/teacher/add-daily-class")
-    public ResponseEntity<?> addDailyClass(@RequestBody AddDailyClassRequest request) {
+    public ResponseEntity<?> addDailyClass(@RequestBody AddDailyClassRequest request, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        Integer idTeacher = user.getId();
         try {
-            dailyClassService.save(request);
+            dailyClassService.save(request, idTeacher);
             return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -83,9 +104,11 @@ public class TeacherController {
     }
 
     @PostMapping("/api/v1/teacher/add-daily-student")
-    public ResponseEntity<?> addDailyStudent(@RequestBody AddDailyStudentRequest request) {
+    public ResponseEntity<?> addDailyStudent(@RequestBody AddDailyStudentRequest request, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        Integer idTeacher = user.getId();
         try {
-            dailyStudentService.save(request);
+            dailyStudentService.save(request,idTeacher);
             return ResponseEntity.status(HttpStatus.CREATED).body("thành công");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
