@@ -9,7 +9,10 @@ public interface NewFindStudentResponse {
 
     String getFullName();
 
+    String getImg();
+
     String getEmail();
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate getDateOfBirth();
 

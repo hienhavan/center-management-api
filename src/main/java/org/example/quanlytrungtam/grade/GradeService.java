@@ -25,11 +25,11 @@ public class GradeService {
         return gradeRepository.findById(idGrade).orElse(null);
     }
 
-    public List<ShowStudentGradeResponse> getAllStudentGrades(Integer idStudent) {
+    public List<ShowStudentGradesResponse> getAllStudentGrades(Integer idStudent) {
         return gradeRepository.findStudentGradesByStudentId(idStudent);
     }
 
-    public Optional<ShowStudentGradeResponse> getGrade(Integer idGrade) {
+    public Optional<FindGradeIdResponse> getGrade(Integer idGrade) {
         return gradeRepository.findStudentGradeDetailsByGradeId(idGrade);
     }
 

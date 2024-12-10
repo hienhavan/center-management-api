@@ -21,7 +21,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             "FROM Student s WHERE s.status = :status")
     List<NewFindAllClassStudentResponse> listStudentStatus(@Param("status") Status status);
 
-    @Query("SELECT s.studentId AS idStudent, s.userID.fullName AS fullName, s.userID.email AS email, s.userID.phoneNumber AS phoneNumber,s.userID.dateOfBirth AS dateOfBirth,s.userID.address AS address,s.userID.gender AS gender,s.status AS status " +
-            "FROM Student s WHERE s.userID.id = :userID")
+    @Query("SELECT s.studentId AS idStudent, s.userID.fullName AS fullName, s.userID.img AS img, s.userID.email AS email, s.userID.phoneNumber AS phoneNumber,s.userID.dateOfBirth AS dateOfBirth,s.userID.address AS address,s.userID.gender AS gender,s.status AS status " +
+            "FROM Student s WHERE s.studentId = :userID")
     NewFindStudentResponse profileStudent(@Param("userID") Integer userID);
+
+    @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.userID.id = :userId AND s.classID.classId = :classId")
+    boolean existsByUserIdAndClassId(@Param("userId") Integer userId, @Param("classId") Integer classId);
 }

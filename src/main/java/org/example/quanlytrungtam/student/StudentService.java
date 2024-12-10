@@ -39,6 +39,10 @@ public class StudentService {
     public void save(AddStudentRequest request) {
         User user = userService.findById(request.getUserId());
         Classes classes = classService.findById(request.getClassId());
+        boolean check = isStudentInClass(request.getUserId(), request.getClassId());
+        if (check) {
+            throw new IllegalArgumentException("Students are already in class");
+        }
         var student = Student.builder()
                 .userID(user)
                 .classID(classes)
@@ -65,16 +69,20 @@ public class StudentService {
                 .orElseThrow(() -> new NoSuchElementException("No student found with user id: " + id));
     }
 
-    public void changeStatus(ChangeStatusRequest request) {
-        Student student = studentRepository.findById(request.getStudentId())
-                .orElseThrow(() -> new NoSuchElementException("No student found with id: " + request.getStudentId()));
-        student.setStatus(Status.valueOf(request.getStatus()));
+    public void changeStatus(Integer idStudent, String status) {
+        Student student = studentRepository.findById(idStudent)
+                .orElseThrow(() -> new NoSuchElementException("No student found with id: " + idStudent));
+        student.setStatus(Status.valueOf(status));
         studentRepository.save(student);
     }
 
     public List<NewFindAllClassStudentResponse> findAllStudentStatus(String status) {
         Status statusEnum = Status.valueOf(status);
         return studentRepository.listStudentStatus(statusEnum);
+    }
+
+    public boolean isStudentInClass(Integer userId, Integer classId) {
+        return studentRepository.existsByUserIdAndClassId(userId, classId);
     }
 
     public NewFindStudentResponse showProfileStudent(Integer idStudent) {

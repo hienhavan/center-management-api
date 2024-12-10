@@ -1,11 +1,7 @@
 package org.example.quanlytrungtam.academicaffairs;
 
 import org.example.quanlytrungtam.classes.ClassService;
-import org.example.quanlytrungtam.grade.AddGradeRequest;
-import org.example.quanlytrungtam.grade.GradeService;
-import org.example.quanlytrungtam.grade.ShowStudentGradeResponse;
-import org.example.quanlytrungtam.grade.UpdateGradeRequest;
-import org.example.quanlytrungtam.student.ChangeStatusRequest;
+import org.example.quanlytrungtam.grade.*;
 import org.example.quanlytrungtam.student.StudentService;
 import org.example.quanlytrungtam.subject.Subject;
 import org.example.quanlytrungtam.subject.SubjectService;
@@ -47,13 +43,13 @@ public class AcademicAffairsController {
 
     @GetMapping("/api/v1/academic-affairs/list-grade")
     public ResponseEntity<?> getAllListGrade(@RequestParam(name = "idStudent", required = false) Integer idStudent) {
-        List<ShowStudentGradeResponse> data = gradesService.getAllStudentGrades(idStudent);
+        List<ShowStudentGradesResponse> data = gradesService.getAllStudentGrades(idStudent);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
     @GetMapping("/api/v1/academic-affairs/grade")
     public ResponseEntity<?> getGrade(@RequestParam(name = "idGrade", required = false) Integer idGrade) {
-        Optional<ShowStudentGradeResponse> data = gradesService.getGrade(idGrade);
+        Optional<FindGradeIdResponse> data = gradesService.getGrade(idGrade);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -87,9 +83,9 @@ public class AcademicAffairsController {
         }
     }
 
-    @GetMapping("/api/v1/academic-affairs/changeStatus")
-    public ResponseEntity<?> changeStatus(@RequestBody ChangeStatusRequest request) {
-        studentService.changeStatus(request);
+    @GetMapping("/api/v1/academic-affairs/changeStatus/{idStudent}/{status}")
+    public ResponseEntity<?> changeStatus(@PathVariable Integer idStudent, @PathVariable String status) {
+        studentService.changeStatus(idStudent, status);
         return ResponseEntity.ok("thành công");
     }
 }

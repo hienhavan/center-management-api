@@ -10,11 +10,14 @@ import java.util.List;
 @Repository
 public interface FeeRepository extends JpaRepository<Fee, Integer> {
     @Query("SELECT f.feeId AS idFee, s.userID.fullName AS studentName, f.dueDate AS dueDate, f.amount AS amount, f.status AS status " +
-            "FROM Fee f JOIN f.student s WHERE s.studentId = :studentId")
+            "FROM Fee f JOIN f.student s " +
+            "WHERE s.studentId = :studentId AND f.status = 'UNPAID' " +
+            "ORDER BY f.dueDate DESC")
     List<NewFindFeeResponse> findListFee(@Param("studentId") Integer studentId);
 
+
     @Query("SELECT f.feeId AS idFee, s.userID.fullName AS studentName, f.dueDate AS dueDate, f.amount AS amount, f.status AS status " +
-            "FROM Fee f JOIN f.student s WHERE f.status = 'ACTIVE' AND  s.studentId = :studentId ORDER BY f.dueDate ASC")
+            "FROM Fee f JOIN f.student s WHERE f.status = 'ACTIVE' AND  s.studentId = :studentId ORDER BY f.dueDate DESC")
     List<NewFindFeeResponse> findListFeeHistory(@Param("studentId") Integer studentId);
 }
 

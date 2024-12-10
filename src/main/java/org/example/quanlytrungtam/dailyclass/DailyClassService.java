@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DailyClassService {
@@ -21,6 +22,10 @@ public class DailyClassService {
     public DailyClassService(UserService userService, ClassService classService) {
         this.userService = userService;
         this.classService = classService;
+    }
+
+    public List<NewfindListDailyResponse> getNewFindListDaily(Integer idClass) {
+        return dailyClassRepository.findDailyClassesByClassId(idClass);
     }
 
     LocalDateTime currentDateTime = LocalDateTime.now();

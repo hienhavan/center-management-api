@@ -1,16 +1,12 @@
 package org.example.quanlytrungtam.grade;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.example.quanlytrungtam.student.Status;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ShowStudentGradeResponse {
-    //    private String status;
+public class FindGradeIdResponse {
     private String className;
     private String studentName;
     private String subjectName;

@@ -9,19 +9,29 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public interface GradeRepository extends JpaRepository<Grades, Integer> {
-    @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradeResponse(c.className, s.userID.fullName, sub.subjectName, " +
-            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId,g.theoryGrade, g.practicalGrade, " +
+//    @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradeResponse(c.className,s.userID.fullName, sub.subjectName, " +
+//            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId, g.theoryGrade, g.practicalGrade, " +
+//            "(g.theoryGrade + g.practicalGrade) / 2)) " +
+//            "FROM Grades g " +
+//            "JOIN g.student s " +
+//            "JOIN g.subject sub " +
+//            "JOIN s.classID c " +
+//            "WHERE s.studentId = :studentId")
+//    List<ShowStudentGradeResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId);
+
+    @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradesResponse(s.status,s.userID.fullName, sub.subjectName, " +
+            "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId, g.theoryGrade, g.practicalGrade, " +
             "(g.theoryGrade + g.practicalGrade) / 2)) " +
             "FROM Grades g " +
             "JOIN g.student s " +
             "JOIN g.subject sub " +
-            "JOIN s.classID c " +
             "WHERE s.studentId = :studentId")
-    List<ShowStudentGradeResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId);
+    List<ShowStudentGradesResponse> findStudentGradesByStudentId(@Param("studentId") Integer studentId);
 
-    @Query("SELECT new org.example.quanlytrungtam.grade.ShowStudentGradeResponse(c.className, s.userID.fullName, sub.subjectName, " +
+    @Query("SELECT new org.example.quanlytrungtam.grade.FindGradeIdResponse(c.className, s.userID.fullName, sub.subjectName, " +
             "new org.example.quanlytrungtam.grade.ShowGradeResponse(g.gradeId,g.theoryGrade, g.practicalGrade, " +
             "(g.theoryGrade + g.practicalGrade) / 2)) " +
             "FROM Grades g " +
@@ -29,7 +39,7 @@ public interface GradeRepository extends JpaRepository<Grades, Integer> {
             "JOIN g.subject sub " +
             "JOIN s.classID c " +
             "WHERE g.gradeId = :gradeId")
-    Optional<ShowStudentGradeResponse> findStudentGradeDetailsByGradeId(@Param("gradeId") Integer idGrade);
+    Optional<FindGradeIdResponse> findStudentGradeDetailsByGradeId(@Param("gradeId") Integer idGrade);
 
     @Query("SELECT g.student.classID.classId AS classId, g.student.classID.className AS className, AVG(g.averageGrade) AS averageGrades,g.student.classID.lecturer.fullName AS teacher,g.student.classID.lecturer.phoneNumber AS phoneNumber, g.student.classID.lecturer.email AS email " +
             "FROM Grades g " +

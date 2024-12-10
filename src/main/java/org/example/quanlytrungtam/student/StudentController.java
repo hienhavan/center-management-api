@@ -1,14 +1,13 @@
 package org.example.quanlytrungtam.student;
 
-import org.example.quanlytrungtam.fee.Fee;
 import org.example.quanlytrungtam.fee.FeeService;
 import org.example.quanlytrungtam.fee.NewFindFeeResponse;
 import org.example.quanlytrungtam.grade.GradeService;
 import org.example.quanlytrungtam.grade.ShowStudentGradeResponse;
+import org.example.quanlytrungtam.grade.ShowStudentGradesResponse;
 import org.example.quanlytrungtam.user.User;
 import org.example.quanlytrungtam.user.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +53,7 @@ public class StudentController {
     public ResponseEntity<?> getStudentGrades(Principal principal) {
         User user = userService.findByEmail(principal.getName());
         Integer idUser = user.getId();
-        List<ShowStudentGradeResponse> data = gradeService.getAllStudentGrades(idUser);
+        List<ShowStudentGradesResponse> data = gradeService.getAllStudentGrades(idUser);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 }
