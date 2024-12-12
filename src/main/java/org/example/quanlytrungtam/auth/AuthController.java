@@ -43,11 +43,11 @@ public class AuthController {
         Optional<User> currentUser = userDetailsService.findByUserEmail(user.getEmail());
 
         if (!currentUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng không tìm thấy");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
 
         if (!currentUser.get().getActive()) {
-            return ResponseEntity.status(403).body("Người dùng bị ban vĩnh viễn");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Locked account");
         }
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -60,7 +60,7 @@ public class AuthController {
             kafkaTemplate.send("login-topic", jwtResponse);
             return ResponseEntity.ok(jwtResponse);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Thông tin đăng nhập không chính xác");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect login information");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
         }

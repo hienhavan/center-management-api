@@ -9,7 +9,9 @@ import org.example.quanlytrungtam.student.LecturerClassStudentCountProjectionRes
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -208,8 +210,8 @@ public class UserService {
         String code = String.valueOf(random.nextInt(9000) + 1000);
         String redisKeyCode = "user:" + idUser;
         String redisKeyEmail = "email:" + email;
-        redisTemplate.opsForValue().set(redisKeyCode, code, 30, TimeUnit.SECONDS);
-        redisTemplate.opsForValue().set(redisKeyEmail, email, 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKeyCode, code, 2, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(redisKeyEmail, email, 2, TimeUnit.MINUTES);
         return code;
     }
 
@@ -220,7 +222,7 @@ public class UserService {
         String code = redisSendFindPassword(idUser, email);
         String name = user.getFullName();
         String subject = "Request Password Recovery";
-        String text = String.format("Hello %s,\n\nYour password recovery request has been successful, please enter the following code in the Codes section of the website to continue: the code is valid for 30 seconds\nCode: %s\n\nIf it's not you, there's no need to do anything.", name, code);
+        String text = String.format("Hello %s,\n\nYour password recovery request has been successful, please enter the following code in the Codes section of the website to continue: the code is valid for 2 minutes\nCode: %s\n\nIf it's not you, there's no need to do anything.", name, code);
         SendEmailRequest request = new SendEmailRequest(email, subject, text);
         kafkaTemplate.send("send-code-password-topic", request);
     }
@@ -247,6 +249,10 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("not found" + email));
     }
 
+    public boolean checkEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public List<NewFindAllTeacherResponse> findAllTeacher() throws UserNotFoundException {
         return userRepository.findByRoles(Role.ROLE_TEACHER);
     }
@@ -263,7 +269,8 @@ public class UserService {
         return userRepository.getUserNumberByMonthOfYear(year);
     }
 
-    public List<LecturerClassStudentCountProjectionResponse> findTeacherStudentCounts() {
-        return userRepository.getLecturerClassStudentCounts();
+    public Slice<LecturerClassStudentCountProjectionResponse> findTeacherStudentCounts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.getLecturerClassStudentCounts(pageable);
     }
 }

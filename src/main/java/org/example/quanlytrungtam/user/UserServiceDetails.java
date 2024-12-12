@@ -57,7 +57,6 @@ public class UserServiceDetails implements UserServiceInterface, UserDetailsServ
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
         return build(user);
-
     }
 
     @Override

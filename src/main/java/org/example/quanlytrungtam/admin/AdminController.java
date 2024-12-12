@@ -3,6 +3,7 @@ package org.example.quanlytrungtam.admin;
 import org.example.quanlytrungtam.academicaffairs.NewFindAllClassResponse;
 import org.example.quanlytrungtam.classes.AddClassRequest;
 import org.example.quanlytrungtam.classes.ClassService;
+import org.example.quanlytrungtam.config.page.PageResponse;
 import org.example.quanlytrungtam.fee.AddFeeRequest;
 import org.example.quanlytrungtam.fee.FeeService;
 import org.example.quanlytrungtam.grade.GradeService;
@@ -44,6 +45,9 @@ public class AdminController {
     @PostMapping("/api/v1/admin/register")
     public ResponseEntity<?> register(@RequestBody AddUserRequest request) {
         try {
+            if (userService.checkEmail(request.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+            }
             userService.save(request);
             return ResponseEntity.status(HttpStatus.CREATED).body("Đăng ký thành công");
         } catch (RuntimeException e) {
@@ -114,9 +118,10 @@ public class AdminController {
     }
 
     @GetMapping("/api/v1/admin/teacher-student-counts")
-    public ResponseEntity<?> getAllStudents() {
-        List<LecturerClassStudentCountProjectionResponse> data = userService.findTeacherStudentCounts();
-        return ResponseEntity.status(HttpStatus.OK).body(data);
+    public ResponseEntity<?> getAllStudents(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        Slice<LecturerClassStudentCountProjectionResponse> data = userService.findTeacherStudentCounts(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(data));
     }
 
     @PostMapping("/api/v1/admin/add-fee")
